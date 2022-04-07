@@ -1,7 +1,9 @@
 import re
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -60,5 +62,17 @@ if __name__ == "__main__":
     lr = LogisticRegression(random_state=0, max_iter=500)
     y_pred = train_pred(lr, train, test, y_train)
     print("-- Logistic --")
+    confusion = confusion_matrix(y_pred, y_test)
+    print(confusion)
+
+    # feature engineering
+    pca = PCA(n_components=200)
+    pca_train = pca.fit_transform(train)
+    pca_test = pca.transform(test)
+
+    # svm
+    svc = SVC(decision_function_shape='ovo')
+    y_pred = train_pred(svc, pca_train, pca_test, y_train)
+    print("-- SVM --")
     confusion = confusion_matrix(y_pred, y_test)
     print(confusion)
